@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hostel & Mess Management System</title>
     <link rel="stylesheet" href="/static/style.css">
-    <link rel="stylesheet" href="/static/vendor/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
 </head>
 <body class="app-page">
@@ -13,36 +13,36 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo">
-                <i class="fas fa-building"></i>
+                <i class="fa-solid fa-building"></i>
                 <span>HostelHub</span>
             </div>
             <nav class="nav-menu">
                 <a href="#" class="nav-item active" data-section="dashboard">
-                    <i class="fas fa-home"></i>
+                    <i class="fa-solid fa-house"></i>
                     <span>Dashboard</span>
                 </a>
                 <a href="#" class="nav-item" data-section="students">
-                    <i class="fas fa-user-graduate"></i>
+                    <i class="fa-solid fa-user-graduate"></i>
                     <span>Students</span>
                 </a>
                 <a href="#" class="nav-item" data-section="rooms">
-                    <i class="fas fa-bed"></i>
+                    <i class="fa-solid fa-bed"></i>
                     <span>Rooms</span>
                 </a>
                 <a href="#" class="nav-item" data-section="mess">
-                    <i class="fas fa-utensils"></i>
+                    <i class="fa-solid fa-utensils"></i>
                     <span>Mess</span>
                 </a>
                 <a href="#" class="nav-item" data-section="attendance">
-                    <i class="fas fa-calendar-check"></i>
+                    <i class="fa-solid fa-calendar-check"></i>
                     <span>Attendance</span>
                 </a>
                 <a href="#" class="nav-item" data-section="billing">
-                    <i class="fas fa-file-invoice-dollar"></i>
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
                     <span>Billing</span>
                 </a>
                 <a href="#" class="nav-item" data-section="feedback">
-                    <i class="fas fa-comment-dots"></i>
+                    <i class="fa-solid fa-comment-dots"></i>
                     <span>Feedback</span>
                 </a>
             </nav>
@@ -55,7 +55,7 @@
                     </div>
                 </div>
                 <button class="btn btn-secondary btn-sm logout-btn" id="logoutBtn">
-                    <i class="fas fa-right-from-bracket"></i>
+                    <i class="fa-solid fa-right-from-bracket"></i>
                     Logout
                 </button>
             </div>
@@ -71,15 +71,16 @@
                 </div>
                 <div class="header-actions">
                     <div class="search-box">
-                        <i class="fas fa-search"></i>
+                        <i class="fa-solid fa-magnifying-glass"></i>
                         <input type="text" placeholder="Search...">
                     </div>
-                    <button class="notification-btn">
-                        <i class="fas fa-bell"></i>
+                    <button class="notification-btn" type="button" aria-label="Notifications">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="sr-only">Notifications</span>
                         <span class="badge" style="display:none;">0</span>
                     </button>
                     <button class="btn btn-primary" id="addNewBtn">
-                        <i class="fas fa-plus"></i>
+                        <i class="fa-solid fa-plus"></i>
                         Add New
                     </button>
                 </div>
@@ -240,7 +241,7 @@
                         <div class="card-header">
                             <h3>Today's Menu</h3>
                             <button class="btn btn-primary btn-sm" id="addMenuBtn">
-                                <i class="fas fa-plus"></i> Add Item
+                                <i class="fa-solid fa-plus"></i> Add Item
                             </button>
                         </div>
                         <div class="card-body">
@@ -293,7 +294,7 @@
                         <div class="filter-group">
                             <input type="date" class="date-input" id="attendanceDate">
                             <button class="btn btn-primary" id="markAttendanceBtn">
-                                <i class="fas fa-check"></i> Mark Attendance
+                                <i class="fa-solid fa-check"></i> Mark Attendance
                             </button>
                         </div>
                     </div>
@@ -307,13 +308,13 @@
                                     <option value="check_out">Check Out</option>
                                 </select>
                                 <button class="btn btn-primary" id="scanNowBtn">
-                                    <i class="fas fa-id-card"></i> Scan Now
+                                    <i class="fa-solid fa-id-card"></i> Scan Now
                                 </button>
                                 <button class="btn btn-secondary" id="startCameraScanBtn">
-                                    <i class="fas fa-camera"></i> Start Camera Scan
+                                    <i class="fa-solid fa-camera"></i> Start Camera Scan
                                 </button>
                                 <button class="btn btn-secondary" id="stopCameraScanBtn" style="display:none;">
-                                    <i class="fas fa-stop-circle"></i> Stop Scan
+                                    <i class="fa-solid fa-stop-circle"></i> Stop Scan
                                 </button>
                             </div>
                             <p class="scanner-help">Tip: Camera scanning uses html5-qrcode and accepts plain text or JSON QR payload containing student_id, student_code, id_card_uid, or email.</p>
@@ -325,22 +326,22 @@
 
                         <div class="attendance-overview">
                             <div class="overview-card present">
-                                <i class="fas fa-check-circle"></i>
+                                <i class="fa-solid fa-circle-check"></i>
                                 <span class="overview-value" id="attPresent">0</span>
                                 <span class="overview-label">Present</span>
                             </div>
                             <div class="overview-card absent">
-                                <i class="fas fa-times-circle"></i>
+                                <i class="fa-solid fa-circle-xmark"></i>
                                 <span class="overview-value" id="attAbsent">0</span>
                                 <span class="overview-label">Absent</span>
                             </div>
                             <div class="overview-card leave">
-                                <i class="fas fa-calendar-minus"></i>
+                                <i class="fa-solid fa-calendar-minus"></i>
                                 <span class="overview-value" id="attLeave">0</span>
                                 <span class="overview-label">On Leave</span>
                             </div>
                             <div class="overview-card percentage">
-                                <i class="fas fa-percentage"></i>
+                                <i class="fa-solid fa-percent"></i>
                                 <span class="overview-value" id="attPercentage">0%</span>
                                 <span class="overview-label">Attendance %</span>
                             </div>
@@ -364,7 +365,7 @@
                                         <option value="check_out">Check Out</option>
                                     </select>
                                     <button class="btn btn-secondary" id="refreshAttendanceLogBtn">
-                                        <i class="fas fa-rotate-right"></i> Refresh
+                                        <i class="fa-solid fa-rotate-right"></i> Refresh
                                     </button>
                                 </div>
                             </div>
@@ -399,10 +400,10 @@
                 </div>
                 <div class="billing-actions">
                     <button class="btn btn-primary" id="generateBillBtn">
-                        <i class="fas fa-file-invoice"></i> Generate Bills
+                        <i class="fa-solid fa-file-invoice"></i> Generate Bills
                     </button>
                     <button class="btn btn-secondary" id="viewOverdueBtn">
-                        <i class="fas fa-exclamation-triangle"></i> View Overdue
+                        <i class="fa-solid fa-triangle-exclamation"></i> View Overdue
                     </button>
                 </div>
                 <div class="card">

@@ -33,8 +33,6 @@ app.py
 requirements.txt
 README.md
 TODO.md
-data/
-  hostelhub_local.db
 static/
   script.js
   style.css
@@ -72,6 +70,8 @@ pip install psycopg2-binary
 ```powershell
 $env:SUPABASE_DB_URL="postgresql://postgres:<PASSWORD>@db.<PROJECT-REF>.supabase.co:5432/postgres"
 ```
+
+This variable is required. The app no longer falls back to a local SQLite database.
 
 If your password contains special characters like `@`, URL-encode them in the connection string (`@` becomes `%40`).
 

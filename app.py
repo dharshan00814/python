@@ -16,18 +16,13 @@ app = Flask(__name__)
 CORS(app, supports_credentials=True, origins=['http://127.0.0.1:5500', 'http://localhost:5500', 'http://127.0.0.1:5000'])
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "change-this-secret-in-production")
 DATABASE_URL = os.getenv("SUPABASE_DB_URL") or os.getenv("DATABASE_URL")
-USING_LOCAL_SQLITE = not DATABASE_URL
-
-if USING_LOCAL_SQLITE:
-    os.makedirs("data", exist_ok=True)
-    DATABASE_URL = "sqlite:///data/hostelhub_local.db"
-    print("[startup] SUPABASE_DB_URL not set. Using local SQLite database: data/hostelhub_local.db")
+if not DATABASE_URL:
+    raise RuntimeError("SUPABASE_DB_URL is required. Local SQLite fallback has been removed.")
 
 engine = create_engine(
     DATABASE_URL,
-    pool_pre_ping=not DATABASE_URL.startswith("sqlite"),
+    pool_pre_ping=True,
 )
-IS_SQLITE = engine.dialect.name == "sqlite"
 
 
 @app.errorhandler(OperationalError)
@@ -92,107 +87,6 @@ def after_request(response):
 
 def init_db():
     with engine.begin() as conn:
-        if IS_SQLITE:
-            conn.execute(text("PRAGMA foreign_keys = ON"))
-            conn.execute(text("""
-                CREATE TABLE IF NOT EXISTS students (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    student_code TEXT UNIQUE,
-                    id_card_uid TEXT UNIQUE,
-                    name TEXT NOT NULL,
-                    email TEXT NOT NULL UNIQUE,
-                    department TEXT NOT NULL,
-                    year INTEGER NOT NULL,
-                    status TEXT NOT NULL CHECK(status IN ('active', 'inactive')),
-                    login_password TEXT
-                )
-            """))
-            conn.execute(text("""
-                CREATE TABLE IF NOT EXISTS menu_items (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT NOT NULL,
-                    description TEXT,
-                    category TEXT NOT NULL,
-                    price REAL NOT NULL,
-                    available INTEGER NOT NULL DEFAULT 1,
-                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-                )
-            """))
-            conn.execute(text("""
-                CREATE TABLE IF NOT EXISTS food_orders (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    menu_item_id INTEGER NOT NULL,
-                    student_name TEXT NOT NULL,
-                    amount REAL NOT NULL,
-                    payment_method TEXT NOT NULL DEFAULT 'upi',
-                    transaction_ref TEXT NOT NULL,
-                    status TEXT NOT NULL DEFAULT 'confirmed',
-                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (menu_item_id) REFERENCES menu_items(id)
-                )
-            """))
-            conn.execute(text("""
-                CREATE TABLE IF NOT EXISTS rooms (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    room_number TEXT NOT NULL UNIQUE,
-                    block TEXT NOT NULL,
-                    floor INTEGER NOT NULL,
-                    capacity INTEGER NOT NULL DEFAULT 4,
-                    current_occupancy INTEGER NOT NULL DEFAULT 0,
-                    room_type TEXT NOT NULL DEFAULT 'standard',
-                    monthly_rent REAL NOT NULL DEFAULT 5000,
-                    status TEXT NOT NULL DEFAULT 'available',
-                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-                )
-            """))
-            conn.execute(text("""
-                CREATE TABLE IF NOT EXISTS bills (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    student_name TEXT,
-                    room_id INTEGER,
-                    bill_type TEXT NOT NULL,
-                    amount REAL NOT NULL,
-                    due_date TEXT NOT NULL,
-                    status TEXT NOT NULL DEFAULT 'pending',
-                    paid_date TEXT,
-                    payment_method TEXT,
-                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (room_id) REFERENCES rooms(id)
-                )
-            """))
-            bill_columns = {
-                row[1]
-                for row in conn.execute(text("PRAGMA table_info(bills)")).fetchall()
-            }
-            if "room_id" not in bill_columns:
-                conn.execute(text("ALTER TABLE bills ADD COLUMN room_id INTEGER"))
-            conn.execute(text("""
-                CREATE TABLE IF NOT EXISTS payments (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    bill_id INTEGER NOT NULL,
-                    amount REAL NOT NULL,
-                    payment_method TEXT NOT NULL,
-                    transaction_ref TEXT,
-                    paid_date TEXT NOT NULL,
-                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (bill_id) REFERENCES bills(id)
-                )
-            """))
-            conn.execute(text("""
-                CREATE TABLE IF NOT EXISTS attendance_records (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    student_id INTEGER NOT NULL,
-                    attendance_date TEXT NOT NULL DEFAULT CURRENT_DATE,
-                    scan_type TEXT NOT NULL CHECK(scan_type IN ('check_in', 'check_out')),
-                    scan_method TEXT NOT NULL DEFAULT 'id_card',
-                    scan_value TEXT NOT NULL,
-                    location TEXT NOT NULL DEFAULT 'hostel_gate',
-                    scanned_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (student_id) REFERENCES students(id)
-                )
-            """))
-            return
-
         conn.execute(text("""
             CREATE TABLE IF NOT EXISTS students (
                 id BIGSERIAL PRIMARY KEY,
@@ -630,10 +524,7 @@ def dashboard_revenue():
             FROM bills
             WHERE status = 'paid'
         """
-        if IS_SQLITE:
-            revenue_query += " AND strftime('%Y-%m', paid_date) = strftime('%Y-%m', 'now')"
-        else:
-            revenue_query += " AND TO_CHAR(paid_date, 'YYYY-MM') = TO_CHAR(CURRENT_DATE, 'YYYY-MM')"
+        revenue_query += " AND TO_CHAR(paid_date, 'YYYY-MM') = TO_CHAR(CURRENT_DATE, 'YYYY-MM')"
         revenue = conn.execute(text(revenue_query)).scalar_one()
 
     return jsonify({"monthly_revenue": revenue})
